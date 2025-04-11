@@ -123,14 +123,6 @@ def main():
                 classification[index].append(graph)
             else:
                 classification[index] = [graph]
-    for graph in list_graphs(10):
-        is_critical, the_clique_graph = is_clique_critical(graph)
-        if is_critical and len(the_clique_graph) <= 5:
-            index = classify_graph(the_clique_graph)
-            if index in classification:
-                classification[index].append(graph)
-            else:
-                classification[index] = [graph]
 
     plot_graph_classification(classification)
 
