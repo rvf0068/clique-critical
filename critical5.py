@@ -8,17 +8,11 @@ from networkx.generators.atlas import graph_atlas_g
 def plot_graph_classification(classification,
                               filename="graph_table.pdf",
                               graphs_per_page=6):
-    """
-    Plots the graph classification dictionary to a PDF file,
-    limiting the number of graphs per page.
-    """
-    sorted_indices = sorted(classification.keys())
+    """Plots graphs to a PDF, limiting graphs per page."""
 
     with PdfPages(filename) as pdf:
-        for index in sorted_indices:
-            graphs = classification[index]
+        for category, graphs in classification.items():
             num_graphs = len(graphs)
-
             start = 0
             while start < num_graphs:
                 end = min(start + graphs_per_page, num_graphs)
@@ -28,31 +22,22 @@ def plot_graph_classification(classification,
                 fig, axes = plt.subplots(1, num_cols,
                                          figsize=(num_cols * 3, 3))
 
-                for j, graph in enumerate(graphs_to_plot):
-                    # Handle the case where axes is a single Axes object
-                    if isinstance(axes, np.ndarray):
-                        ax = axes[j] if num_cols > 1 else axes
-                    else:
-                        ax = axes
+                # Handle the case where axes is a single Axes object
+                if not isinstance(axes, np.ndarray):
+                    axes = np.array([axes])  # Make it a 1-element array
 
-                    ax.set_title(f"Atlas {index}", fontsize=10)
+                for j, graph in enumerate(graphs_to_plot):
+                    ax = axes[j]  # Access the subplot
                     nx.draw(graph, ax=ax, with_labels=False,
                             node_size=100)
+                    ax.set_title(f"{category} - Graph {j+1}")
 
-                # Turn off any unused subplots. Account for single subplot
+                # Turn off any unused subplots on the row
                 for j in range(num_cols, graphs_per_page):
-                    # Handle the case where axes is a single Axes object
-                    if isinstance(axes, np.ndarray):
-                        if num_cols > 1:
-                            ax = axes[j]
-                        else:
-                            continue  # only 1 subplot, nothing to clear
-                    else:
-                        break  # only 1 axes object, nothing to clear
+                    ax = axes[j]
+                    ax.axis('off')  # Remove ticks and labels
 
-                    ax.axis('off')
-
-                plt.tight_layout(pad=2.0)
+                plt.tight_layout()
                 pdf.savefig(fig)
                 plt.close(fig)
                 start = end
