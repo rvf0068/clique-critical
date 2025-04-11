@@ -22,9 +22,8 @@ def plot_graph_classification(classification,
                 fig, axes = plt.subplots(1, num_cols,
                                          figsize=(num_cols * 3, 3))
 
-                # Handle the case where axes is a single Axes object
-                if not isinstance(axes, np.ndarray):
-                    axes = np.array([axes])  # Make it a 1-element array
+                if num_cols == 1:
+                    axes = np.array([axes])
 
                 for j, graph in enumerate(graphs_to_plot):
                     ax = axes[j]  # Access the subplot
