@@ -8,10 +8,15 @@ from networkx.generators.atlas import graph_atlas_g
 def plot_graph_classification(classification,
                               filename="graph_table.pdf",
                               graphs_per_page=6):
-    """Plots graphs to a PDF, limiting graphs per page."""
+    """
+    Plots graphs to a PDF, limiting graphs per page.
+    Returns a sorted dictionary of the classification.
+    """
+    # Sort the classification by keys
+    sorted_classification = dict(sorted(classification.items()))
 
     with PdfPages(filename) as pdf:
-        for category, graphs in classification.items():
+        for category, graphs in sorted_classification.items():
             num_graphs = len(graphs)
             start = 0
             while start < num_graphs:
@@ -31,16 +36,12 @@ def plot_graph_classification(classification,
                             node_size=100)
                     ax.set_title(f"{category} - Graph {j+1}")
 
-                # Turn off any unused subplots on the row
-                for j in range(num_cols, graphs_per_page):
-                    ax = axes[j]
-                    ax.axis('off')  # Remove ticks and labels
-
                 plt.tight_layout()
                 pdf.savefig(fig)
                 plt.close(fig)
                 start = end
 
+    return sorted_classification
 
 def main():
     """
@@ -104,6 +105,14 @@ def main():
             else:
                 classification[index] = [graph]
     for graph in graph_generator(9):
+        is_critical, the_clique_graph = is_clique_critical(graph)
+        if is_critical and len(the_clique_graph) <= 5:
+            index = classify_graph(the_clique_graph)
+            if index in classification:
+                classification[index].append(graph)
+            else:
+                classification[index] = [graph]
+    for graph in graph_generator(10):
         is_critical, the_clique_graph = is_clique_critical(graph)
         if is_critical and len(the_clique_graph) <= 5:
             index = classify_graph(the_clique_graph)
