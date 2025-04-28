@@ -110,11 +110,11 @@ def main():
     Main function to generate and plot the classification.
     """
     classification = {}
-    plot_graph_classification(classification)
     process_graphs(nx.graph_atlas_g()[1:], classification)
     process_graphs(graph_generator(8), classification, check_connected=False)
     process_graphs(graph_generator(9), classification, check_connected=False)
     process_graphs(graph_generator(10), classification, check_connected=False)
+    plot_graph_classification(classification)
 
 
 if __name__ == '__main__':
