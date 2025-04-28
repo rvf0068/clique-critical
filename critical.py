@@ -10,24 +10,30 @@ from typing import Dict, List, Tuple, Optional, Iterable
 import sys
 
 
-def is_clique_critical(graph: nx.Graph) -> Tuple[bool,
+def is_clique_critical(graph: nx.Graph) -> Tuple[Optional[bool],
                                                  Optional[nx.Graph]]:
     """
-    Checks if a graph is clique-critical.
+    Checks if a graph is clique-critical, with early exit if the
+    clique graph has > 5 cliques.
+    Returns None if criticality is indeterminate.
     """
-    if not isinstance(graph, nx.Graph):
-        raise TypeError("Input must be a networkx graph.")
+    this_clique_graph: Optional[nx.Graph] = clique_graph(graph, 5)
 
-    this_clique_graph: nx.Graph = clique_graph(graph)
+    if this_clique_graph is None:
+        # Graph has more than 5 cliques; criticality is indeterminate
+        return None, None
+
     for vertex in graph.nodes():
         graph_vertex_removed: nx.Graph = copy.deepcopy(graph)
         graph_vertex_removed.remove_node(vertex)
-        removed_clique_graph: nx.Graph = clique_graph(
-            graph_vertex_removed)
+        removed_clique_graph: nx.Graph = \
+            clique_graph(graph_vertex_removed)
+
         if nx.is_isomorphic(this_clique_graph,
                             removed_clique_graph):
-            return False, None
-    return True, this_clique_graph
+            return False, None  # Not critical
+
+    return True, this_clique_graph  # Critical
 
 
 def classify_graph(graph: nx.Graph) -> Optional[int]:
