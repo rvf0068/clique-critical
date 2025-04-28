@@ -47,7 +47,7 @@ def main():
     Main function to generate and plot the classification.
     """
     from pycliques.cliques import clique_graph
-    from pycliques.lists import list_graphs
+    from pycliques.lists import graph_generator
     import copy
 
     def is_clique_critical(graph):
@@ -95,7 +95,7 @@ def main():
                     classification[index].append(graph)
                 else:
                     classification[index] = [graph]
-    for graph in list_graphs(8):
+    for graph in graph_generator(8):
         is_critical, the_clique_graph = is_clique_critical(graph)
         if is_critical and len(the_clique_graph) <= 5:
             index = classify_graph(the_clique_graph)
@@ -103,7 +103,7 @@ def main():
                 classification[index].append(graph)
             else:
                 classification[index] = [graph]
-    for graph in list_graphs(9):
+    for graph in graph_generator(9):
         is_critical, the_clique_graph = is_clique_critical(graph)
         if is_critical and len(the_clique_graph) <= 5:
             index = classify_graph(the_clique_graph)
